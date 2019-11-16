@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  assay:
+    image: mrigankamouli/assay_image:1.1
+    restart: always
+    ports:
+      - 8082:8082
+    working_dir: /opt/app
+    depends_on:
+      - mongo
+    links:
+      - mongo
+
+  mongo:
+    image: mongo:4.0.12
+    container_name: "mongo"
+    environment:
+      MONGO_DATA_DIR: /data/db
+      MONGO_LOG_DIR: /dev/null
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: abc123
+      MONGO_INITDB_DATABASE: assaydb
+    volumes:
+      - ./data/db:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
